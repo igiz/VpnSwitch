@@ -1,0 +1,40 @@
+#!/bin/sh
+#
+# Original version by Zygimantas Raugas
+
+DAEMON=/usr/bin/node
+NAME=NodeApiServer
+DESC="NodeJS API Server"
+APILOCATION=/usr/libexec/api/
+APP=server.js
+
+set -e
+
+test -x $DAEMON || exit 0
+test -d $APILOCATION || exit 0
+
+case "$1" in
+    start)
+	cd $APILOCATION
+        echo -n "* starting $DESC: $NAME... "
+        start-stop-daemon -S -b -x $DAEMON -- $APP
+        echo "done."
+        ;;
+    stop)
+        echo -n "* stopping $DESC: $NAME... "
+        start-stop-daemon -K -x $DAEMON
+        echo "done."
+        ;;
+    restart)
+        echo "* restarting $DESC: $NAME... "
+        $0 stop
+        $0 start
+        echo "done."
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit 0
